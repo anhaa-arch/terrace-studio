@@ -46,13 +46,19 @@ export function CreateProjectDialog() {
       const imageUrl = await uploadImage(file);
       console.log("Image uploaded successfully, URL:", imageUrl);
 
-      await createProject({
+      const result = await createProject({
         title,
         description,
         original_image_url: imageUrl,
       });
 
-      console.log("Project created successfully in Database");
+      if (result.error) {
+        console.error("Server Action Error:", result.error);
+        alert(result.error);
+        return;
+      }
+
+      console.log("Project created successfully:", result.data);
       setOpen(false);
       resetForm();
       router.refresh();

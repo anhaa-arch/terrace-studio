@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createDesign } from "@/app/(dashboard)/projects/actions";
+import { generateTerraceImage } from "@/lib/ai";
 
 export async function POST(request: Request) {
   try {
@@ -13,11 +14,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // AI дуудлага хийх хэсэг (Placeholder)
-    // Бодит байдал дээр энд stability.ai эсвэл өөр AI API дуудна
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
+    // AI-д зориулсан Англи prompt угсрах
+    const aiPrompt = `High-quality 3D render of a modern Mongolian apartment roof terrace. 
+Terrace type: ${type}. 
+Materials: ${material || "modern wood and stone"}. 
+Approximate size: ${width_cm || 0}cm by ${depth_cm || 0}cm. 
+Style: minimal, cozy, suitable for real estate marketing. 
+Additional details: ${notes || "No additional notes"}. 
+Golden hour lighting, ultra realistic, 4k, architectural visualization.`;
 
-    const placeholderImage = `https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=2070&auto=format&fit=crop`;
+    console.log("Generating Design with Prompt:", aiPrompt);
+
+    // Бодит AI дуудлага хийх (DALL-E 3)
+    // DALL-E 3 supports 1024x1024 by default
+    const { imageUrl: generatedImageUrl } = await generateTerraceImage(
+      aiPrompt,
+      1024,
+      1024
+    );
 
     const newDesign = await createDesign({
       project_id: projectId,
@@ -26,8 +40,8 @@ export async function POST(request: Request) {
       width_cm: width_cm || 0,
       depth_cm: depth_cm || 0,
       notes: notes || "",
-      generated_image_url: placeholderImage,
-      ai_provider: "TerraceAI-v1",
+      generated_image_url: generatedImageUrl,
+      ai_provider: "OpenAI-DALL-E-3",
     });
 
     return NextResponse.json({ success: true, design: newDesign });

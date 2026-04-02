@@ -19,6 +19,7 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
   const [material, setMaterial] = useState("");
   const [width, setWidth] = useState("");
   const [depth, setHeight] = useState("");
+  const [notes, setNotes] = useState("");
   const router = useRouter();
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -35,6 +36,7 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
           material,
           width_cm: parseInt(width) || 0,
           depth_cm: parseInt(depth) || 0,
+          notes: notes,
         }),
       });
 
@@ -44,6 +46,7 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
       setMaterial("");
       setWidth("");
       setHeight("");
+      setNotes("");
     } catch (error) {
       console.error(error);
       alert("AI загвар үүсгэхэд алдаа гарлаа.");
@@ -111,6 +114,16 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
                 className="studio-input h-11"
               />
             </div>
+          </div>
+
+          <div className="space-y-2.5">
+            <Label className="text-sm font-semibold text-white/90">Нэмэлт тайлбар (Англи эсвэл Монгол)</Label>
+            <Input 
+              value={notes} 
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Жишээ: High floor, sunset view, many plants"
+              className="studio-input h-11"
+            />
           </div>
 
           <div className="flex items-start space-x-3 p-4 rounded-xl bg-primary/5 border border-primary/10">

@@ -14,24 +14,35 @@ export async function createProject(formData: {
 }) {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from("projects")
-    .insert([
-      {
-        title: formData.title,
-        description: formData.description,
-        original_image_url: formData.original_image_url,
-      },
-    ])
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("projects")
+      .insert([
+        {
+          title: formData.title,
+          description: formData.description || null,
+          original_image_url: formData.original_image_url,
+        },
+      ])
+      .select()
+      .single();
 
-  if (error) {
-    throw new Error(`Төсөл үүсгэхэд алдаа гарлаа: ${error.message}`);
+    if (error) {
+      console.error("Supabase Insert Error Detail:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      return { error: `Төсөл хадгалахад алдаа гарлаа: ${error.message}` };
+    }
+
+    revalidatePath("/projects");
+    return { data: data as Project };
+  } catch (error: any) {
+    console.error("Create Project Action Unexpected Error:", error);
+    return { error: error instanceof Error ? error.message : "Төсөл үүсгэхэд тодорхойгүй алдаа гарлаа" };
   }
-
-  revalidatePath("/projects");
-  return data as Project;
 }
 
 /**

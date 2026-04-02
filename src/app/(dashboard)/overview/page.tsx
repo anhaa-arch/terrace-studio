@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FolderKanban, Layers, Sparkles, TrendingUp, Plus } from "lucide-react";
-import { getDashboardStats } from "./projects/actions";
+import { getDashboardStats } from "../projects/actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 

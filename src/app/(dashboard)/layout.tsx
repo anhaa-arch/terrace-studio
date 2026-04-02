@@ -20,7 +20,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         <nav className="flex-1 flex flex-col space-y-2">
-          <Link href="/">
+          <Link href="/overview">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-white/5 h-11 px-4">
               <LayoutDashboard className="mr-3 h-5 w-5" />
               Хянах самбар

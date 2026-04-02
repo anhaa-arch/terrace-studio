@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sparkles, Wand2, Loader2 } from "lucide-react";
+import { Sparkles, Wand2, Loader2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface DesignGeneratorProps {
@@ -33,15 +33,17 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
           projectId,
           type,
           material,
-          width_cm: parseInt(width),
-          depth_cm: parseInt(depth),
+          width_cm: parseInt(width) || 0,
+          depth_cm: parseInt(depth) || 0,
         }),
       });
 
       if (!response.ok) throw new Error("Алдаа гарлаа.");
       
       router.refresh();
-      // Clear or show success?
+      setMaterial("");
+      setWidth("");
+      setHeight("");
     } catch (error) {
       console.error(error);
       alert("AI загвар үүсгэхэд алдаа гарлаа.");
@@ -51,23 +53,25 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
   };
 
   return (
-    <Card className="bg-white/5 border-white/10 overflow-hidden">
-      <CardHeader className="border-b border-white/5 bg-white/5">
-        <CardTitle className="text-lg flex items-center">
-          <Wand2 className="mr-2 h-5 w-5 text-primary" />
-          AI Загвар Боловсруулагч
+    <Card className="studio-glass border-white/10 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <CardHeader className="border-b border-white/5 bg-white/[0.02] py-5">
+        <CardTitle className="text-xl font-bold flex items-center text-white tracking-tight leading-none">
+          <div className="p-2 bg-primary/10 rounded-lg mr-3">
+             <Wand2 className="h-5 w-5 text-primary" />
+          </div>
+          AI Загвар Гаргах
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
-        <form onSubmit={handleGenerate} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Төрөл</Label>
+      <CardContent className="p-6">
+        <form onSubmit={handleGenerate} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2.5">
+              <Label className="text-sm font-semibold text-white/90">Төрөл</Label>
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="bg-white/5 border-white/10">
+                <SelectTrigger className="studio-input h-11">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="studio-glass border-white/10">
                   <SelectItem value="TERRACE">Террас</SelectItem>
                   <SelectItem value="BALCONY">Балкон</SelectItem>
                   <SelectItem value="RAILING">Хашлага</SelectItem>
@@ -75,53 +79,61 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Материал</Label>
+            <div className="space-y-2.5">
+              <Label className="text-sm font-semibold text-white/90">Материал</Label>
               <Input 
                 value={material} 
                 onChange={(e) => setMaterial(e.target.value)}
-                placeholder="Жишээ: Мод, Төмөр"
-                className="bg-white/5 border-white/10"
+                placeholder="Жишээ: Мод, Төмөр, Шил"
+                className="studio-input h-11"
               />
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Урт (см)</Label>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2.5">
+              <Label className="text-sm font-semibold text-white/90">Урт (см)</Label>
               <Input 
                 type="number"
                 value={width} 
                 onChange={(e) => setWidth(e.target.value)}
                 placeholder="0"
-                className="bg-white/5 border-white/10"
+                className="studio-input h-11"
               />
             </div>
-            <div className="space-y-2">
-              <Label>Өргөн/Өндөр (см)</Label>
+            <div className="space-y-2.5">
+              <Label className="text-sm font-semibold text-white/90">Өргөн/Өндөр (см)</Label>
               <Input 
                 type="number"
                 value={depth} 
                 onChange={(e) => setHeight(e.target.value)}
                 placeholder="0"
-                className="bg-white/5 border-white/10"
+                className="studio-input h-11"
               />
             </div>
           </div>
 
+          <div className="flex items-start space-x-3 p-4 rounded-xl bg-primary/5 border border-primary/10">
+            <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Материалын төрөл болон хэмжээг нарийн оруулснаар AI илүү бодит загвар гаргаж чадна.
+            </p>
+          </div>
+
           <Button 
             type="submit"
-            className="w-full h-12 font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-95"
+            className="w-full h-12 font-bold text-lg shadow-xl shadow-primary/20 transition-all hover:scale-[1.01] active:scale-[0.98] relative overflow-hidden group"
             disabled={loading}
           >
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500" />
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Боловсруулж байна...
               </>
             ) : (
               <>
-                <Sparkles className="mr-2 h-5 w-5" />
+                <Sparkles className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                 Загвар гаргах
               </>
             )}

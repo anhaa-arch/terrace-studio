@@ -31,43 +31,45 @@ export default async function ProjectsPage() {
       </div>
 
       {projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-dashed border-white/10 rounded-2xl">
+        <div className="flex flex-col items-center justify-center py-20 studio-glass rounded-2xl border-dashed">
           <ImageIcon className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-          <p className="text-muted-foreground">Одоогоор төсөл байхгүй байна.</p>
+          <p className="text-muted-foreground font-medium">Одоогоор төсөл байхгүй байна.</p>
           <p className="text-xs text-muted-foreground/60 mt-1">Шинэ төсөл үүсгэж эхэлнэ үү.</p>
         </div>
       ) : (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {projects.map((project) => (
             <Link key={project.id} href={`/projects/${project.id}`}>
-              <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer group h-full flex flex-col overflow-hidden hover:scale-[1.02] active:scale-[0.98]">
-                <div className="aspect-video w-full relative overflow-hidden bg-black/40">
+              <Card className="studio-glass studio-card-hover group h-full flex flex-col overflow-hidden">
+                <div className="aspect-[16/10] w-full relative overflow-hidden bg-black/40">
                   <img 
                     src={project.original_image_url} 
                     alt={project.title} 
-                    className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" 
+                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-1000" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                <CardHeader className="py-4 space-y-1">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg font-bold truncate pr-6">{project.title}</CardTitle>
-                    <MoreVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity" />
+                  <div className="absolute bottom-4 left-4 right-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <p className="text-white font-bold text-lg truncate drop-shadow-md">
+                      {project.title}
+                    </p>
                   </div>
+                </div>
+                <CardHeader className="py-4 space-y-1 bg-black/10 flex-1">
                   {project.description && (
-                    <CardDescription className="line-clamp-2 text-xs leading-relaxed">
+                    <CardDescription className="line-clamp-2 text-xs leading-relaxed text-muted-foreground group-hover:text-foreground/80 transition-colors">
                       {project.description}
                     </CardDescription>
                   )}
                 </CardHeader>
-                <CardFooter className="mt-auto pt-0 pb-4 flex items-center justify-between text-[10px] text-muted-foreground font-medium uppercase tracking-widest border-t border-white/5 pt-3 mx-4 px-0">
-                  <span className="flex items-center">
-                    <Calendar className="mr-1 h-3 w-3" />
+                <CardFooter className="mt-auto px-4 py-4 flex items-center justify-between border-t border-white/5 bg-black/20">
+                  <span className="flex items-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                    <Calendar className="mr-1.5 h-3 w-3 text-primary" />
                     {format(new Date(project.created_at), "MMM d, yyyy")}
                   </span>
-                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded ring-1 ring-primary/20">
-                    ҮЗЭХ
-                  </span>
+                  <div className="flex items-center space-x-1 text-[10px] font-bold text-primary group-hover:translate-x-1 transition-transform">
+                    <span>НЭЭХ</span>
+                    <Plus className="h-3 w-3 rotate-45" />
+                  </div>
                 </CardFooter>
               </Card>
             </Link>

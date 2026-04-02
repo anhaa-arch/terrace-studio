@@ -1,12 +1,9 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { History, Download, Share2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Database } from "@/types/database";
+import { History, Image as ImageIcon, Sparkles } from "lucide-react";
+import { Design } from "@/types/database";
 import { format } from "date-fns";
-
-type Design = Database["public"]["Tables"]["designs"]["Row"];
 
 interface DesignHistoryProps {
   designs: Design[];
@@ -14,51 +11,59 @@ interface DesignHistoryProps {
 
 export function DesignHistory({ designs }: DesignHistoryProps) {
   return (
-    <Card className="bg-white/5 border-white/10">
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center text-white">
-          <History className="mr-2 h-5 w-5 text-muted-foreground" />
-          Загварын түүх
+    <Card className="studio-glass border-white/10 shadow-2xl">
+      <CardHeader className="border-b border-white/5 bg-white/[0.02] py-5">
+        <CardTitle className="text-lg font-bold flex items-center text-white tracking-tight">
+          <History className="mr-3 h-5 w-5 text-primary" />
+          Өмнөх загварууд
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="p-4">
         {designs.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-4">
-            Одоогоор загвар үүсгээгүй байна.
-          </p>
+          <div className="flex flex-col items-center justify-center py-10 text-center space-y-3 opacity-40">
+            <div className="p-3 bg-white/5 rounded-full">
+              <ImageIcon className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Түүх байхгүй</p>
+          </div>
         ) : (
-          designs.map((design) => (
-            <div key={design.id} className="flex space-x-3 group cursor-pointer">
-              <div className="w-20 h-20 rounded-lg bg-black/40 border border-white/10 overflow-hidden flex-shrink-0 group-hover:border-primary/50 transition-colors">
-                {design.generated_image_url ? (
-                  <img src={design.generated_image_url} alt={design.type} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-[10px] text-muted-foreground">Зураггүй</span>
+          <div className="space-y-4">
+            {designs.map((design) => (
+              <div 
+                key={design.id} 
+                className="group relative rounded-xl overflow-hidden bg-black/40 border border-white/5 hover:border-primary/40 transition-all cursor-pointer shadow-lg"
+              >
+                <div className="aspect-video w-full relative">
+                  <img 
+                    src={design.generated_image_url || "/placeholder-design.jpg"} 
+                    alt="Generated design" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity" />
+                  
+                  <div className="absolute top-2 right-2">
+                    <div className="bg-primary/20 backdrop-blur-md border border-primary/40 p-1.5 rounded-lg shadow-xl translate-y-1 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all">
+                      <Sparkles className="h-3.5 w-3.5 text-primary-foreground fill-primary-foreground" />
+                    </div>
                   </div>
-                )}
-              </div>
-              <div className="space-y-1 py-1">
-                <p className="text-sm font-medium text-white">{design.type}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {format(new Date(design.created_at), "yyyy-MM-dd HH:mm")}
-                </p>
-                <div className="flex space-x-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                   {design.generated_image_url && (
-                     <a href={design.generated_image_url} target="_blank" rel="noopener noreferrer">
-                       <Download className="h-3 w-3 text-muted-foreground hover:text-white" />
-                     </a>
-                   )}
-                  <Share2 className="h-3 w-3 text-muted-foreground hover:text-white" />
+
+                  <div className="absolute bottom-3 left-3 right-3">
+                     <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1 drop-shadow-md">
+                       {design.type}
+                     </p>
+                     <p className="text-[10px] text-white/60 font-medium truncate drop-shadow-md">
+                       {design.material || "Материал тодорхойгүй"} • {design.width_cm}x{design.depth_cm}см
+                     </p>
+                  </div>
+                </div>
+                <div className="px-3 py-2 flex items-center justify-between bg-black/20">
+                   <span className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                     {format(new Date(design.created_at), "HH:mm • MMM d")}
+                   </span>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-        {designs.length > 0 && (
-          <Button variant="ghost" className="w-full text-xs text-muted-foreground hover:text-foreground">
-            Бүх түүхийг үзэх
-          </Button>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>

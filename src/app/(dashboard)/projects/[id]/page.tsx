@@ -32,28 +32,30 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Main Content: Original Image and Generator */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-white/5 border-white/10 overflow-hidden shadow-2xl">
-            <CardHeader className="border-b border-white/5 bg-white/5 py-4">
-              <CardTitle className="text-sm font-medium flex items-center text-muted-foreground uppercase tracking-widest">
-                <ImageIcon className="mr-2 h-4 w-4" />
-                Эх зураг (Original Image)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-               <div className="aspect-[16/10] bg-black/40 relative group overflow-hidden">
-                  <img 
-                    src={project.original_image_url} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                     <p className="text-white/60 text-xs italic line-clamp-2">
-                        {project.description || "Тайлбар ороогүй байна."}
-                     </p>
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="studio-glass border-white/20 p-0 overflow-hidden shadow-2xl group">
+             <div className="aspect-[16/10] bg-black/40 relative overflow-hidden">
+                <img 
+                  src={project.original_image_url} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="flex items-center space-x-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
+                    <div className="w-8 h-px bg-primary" />
+                    <span>Эх зураг</span>
                   </div>
-               </div>
-            </CardContent>
+                  <h3 className="text-white text-2xl font-bold tracking-tight pr-12 drop-shadow-lg">
+                    {project.title}
+                  </h3>
+                   {project.description && (
+                     <p className="text-white/70 text-sm mt-3 line-clamp-2 max-w-2xl font-medium">
+                        {project.description}
+                     </p>
+                   )}
+                </div>
+             </div>
           </Card>
 
           {/* AI Generator Section */}
@@ -61,20 +63,25 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         </div>
 
         {/* Sidebar: History and Tips */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <DesignHistory designs={designs} />
 
-          <Card className="bg-primary/5 border-primary/20 relative overflow-hidden group">
+          <Card className="studio-glass border-primary/20 relative overflow-hidden group bg-primary/5">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Info className="h-12 w-12" />
+              <Info className="h-16 w-16 text-primary" />
             </div>
-            <CardContent className="p-6 space-y-4">
-              <h4 className="font-bold text-primary flex items-center">
-                Зөвлөгөө
+            <CardContent className="p-8 space-y-4">
+              <h4 className="font-bold text-primary flex items-center text-lg tracking-tight">
+                Архитектур зөвлөгөө
               </h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Загвар гаргахдаа материалын төрлийг (жишээ нь: "Ган", "Мод") тодорхой бичвэл AI илүү нарийвчлалтай зураг гаргах боломжтой болно.
+              <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                Материалын төрлийг (жишээ нь: "Ipe wood", "natural slate") тодорхой бичвэл AI илүү нарийвчлалтай, бодит бүтэцтэй зураг гаргана.
               </p>
+              <div className="pt-2">
+                <Button variant="link" className="text-primary p-0 text-sm font-bold hover:no-underline hover:text-primary/80 transition-colors">
+                  Дэлгэрэнгүй үзэх →
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

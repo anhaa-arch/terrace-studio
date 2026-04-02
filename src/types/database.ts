@@ -12,53 +12,65 @@ export interface Database {
       projects: {
         Row: {
           id: string
-          created_at: string
-          name: string
+          title: string
           description: string | null
-          user_id: string
-          status: 'draft' | 'in_progress' | 'completed'
+          original_image_url: string
+          created_at: string
         }
         Insert: {
           id?: string
-          created_at?: string
-          name: string
+          title: string
           description?: string | null
-          user_id: string
-          status?: 'draft' | 'in_progress' | 'completed'
+          original_image_url: string
+          created_at?: string
         }
         Update: {
           id?: string
-          created_at?: string
-          name?: string
+          title?: string
           description?: string | null
-          user_id?: string
-          status?: 'draft' | 'in_progress' | 'completed'
+          original_image_url?: string
+          created_at?: string
         }
       }
       designs: {
         Row: {
           id: string
-          created_at: string
           project_id: string
-          prompt: string
-          image_url: string | null
-          status: 'pending' | 'processing' | 'succeeded' | 'failed'
+          type: 'TERRACE' | 'BALCONY' | 'RAILING' | 'WINDOW_GUARD'
+          material: string | null
+          width_cm: number | null
+          depth_cm: number | null
+          height_cm: number | null
+          notes: string | null
+          generated_image_url: string | null
+          ai_provider: string | null
+          created_at: string
         }
         Insert: {
           id?: string
-          created_at?: string
           project_id: string
-          prompt: string
-          image_url?: string | null
-          status?: 'pending' | 'processing' | 'succeeded' | 'failed'
+          type: 'TERRACE' | 'BALCONY' | 'RAILING' | 'WINDOW_GUARD'
+          material?: string | null
+          width_cm?: number | null
+          depth_cm?: number | null
+          height_cm?: number | null
+          notes?: string | null
+          generated_image_url?: string | null
+          ai_provider?: string | null
+          created_at?: string
         }
         Update: {
           id?: string
-          created_at?: string
           project_id?: string
-          prompt?: string
-          image_url?: string | null
-          status?: 'pending' | 'processing' | 'succeeded' | 'failed'
+          type?: 'TERRACE' | 'BALCONY' | 'RAILING' | 'WINDOW_GUARD'
+          material?: string | null
+          width_cm?: number | null
+          depth_cm?: number | null
+          height_cm?: number | null
+          notes?: string | null
+          generated_image_url?: string | null
+          ai_provider?: string | null
+          created_at?: string
         }
       }
     }
@@ -67,5 +79,4 @@ export interface Database {
 
 export type Project = Database["public"]["Tables"]["projects"]["Row"];
 export type Design = Database["public"]["Tables"]["designs"]["Row"];
-export type ProjectStatus = Project["status"];
-export type DesignStatus = Design["status"];
+export type DesignType = Database["public"]["Tables"]["designs"]["Row"]["type"];

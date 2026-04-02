@@ -23,20 +23,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <Link href="/">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-white/5 h-11 px-4">
               <LayoutDashboard className="mr-3 h-5 w-5" />
-              Overview
+              Хянах самбар
             </Button>
           </Link>
           <Link href="/projects">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-white/5 h-11 px-4">
               <FolderKanban className="mr-3 h-5 w-5" />
-              Projects
+              Төслүүд
             </Button>
           </Link>
           <div className="flex-1" />
           <Link href="/settings">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-white/5 h-11 px-4">
               <Settings className="mr-3 h-5 w-5" />
-              Settings
+              Тохиргоо
             </Button>
           </Link>
         </nav>
@@ -45,7 +45,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <form action="/auth/signout" method="post">
             <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 h-11 px-4">
               <LogOut className="mr-3 h-5 w-5" />
-              Sign Out
+              Гарах
             </Button>
           </form>
         </div>

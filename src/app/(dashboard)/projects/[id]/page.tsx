@@ -1,107 +1,106 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, ArrowLeft, Download, Share2, History, Wand2 } from "lucide-react";
+import { ArrowLeft, Download, Share2, History, Wand2, Info } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { getProjectById, getDesignsByProjectId } from "../actions";
+import { DesignGenerator } from "@/components/projects/DesignGenerator";
+import { DesignHistory } from "@/components/projects/DesignHistory";
+import { format } from "date-fns";
 
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const [isGenerating, setIsGenerating] = useState(false);
+export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  const project = await getProjectById(params.id);
+  const designs = await getDesignsByProjectId(params.id);
 
   return (
     <div className="space-y-8 pb-12">
+      {/* Header */}
       <div className="flex items-center space-x-4">
         <Link href="/projects">
-          <Button variant="ghost" size="icon" className="hover:bg-white/5">
+          <Button variant="ghost" size="icon" className="hover:bg-white/5 h-10 w-10">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Sunset Villa Terrace</h1>
-          <p className="text-muted-foreground">Project ID: {params.id} • Last modified 2h ago</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">{project.title}</h1>
+          <div className="flex items-center space-x-2 text-xs text-muted-foreground uppercase tracking-widest">
+            <span>ID: {project.id.split("-")[0]}</span>
+            <span>•</span>
+            <span>Үүсгэсэн: {format(new Date(project.created_at), "yyyy-MM-dd")}</span>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
-        {/* Design Generator Column */}
+        {/* Main Content: Original Image and Generator */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-white/5 border-white/10 overflow-hidden">
-            <CardHeader className="border-b border-white/5 bg-white/5">
-              <CardTitle className="text-lg flex items-center">
-                <Wand2 className="mr-2 h-5 w-5 text-primary" />
-                AI Design Generator
+          <Card className="bg-white/5 border-white/10 overflow-hidden shadow-2xl">
+            <CardHeader className="border-b border-white/5 bg-white/5 py-4">
+              <CardTitle className="text-sm font-medium flex items-center text-muted-foreground uppercase tracking-widest">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                Эх зураг (Original Image)
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="aspect-video bg-black/40 flex items-center justify-center relative group">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="text-center space-y-4 p-8 z-10">
-                  <div className="p-4 bg-primary/20 rounded-full inline-block animate-pulse">
-                    <Sparkles className="h-8 w-8 text-primary" />
+               <div className="aspect-[16/10] bg-black/40 relative group overflow-hidden">
+                  <img 
+                    src={project.original_image_url} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                     <p className="text-white/60 text-xs italic line-clamp-2">
+                        {project.description || "Тайлбар ороогүй байна."}
+                     </p>
                   </div>
-                  <p className="text-muted-foreground max-w-md">
-                    Ready to generate a new architectural deck design. 
-                    Input your parameters to begin the transformation.
-                  </p>
-                </div>
-              </div>
-              <div className="p-6 space-y-4">
-                <textarea 
-                  className="w-full min-h-[120px] bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
-                  placeholder="Describe the desired terrace style (e.g., 'Modern minimalist wooden deck with glass railings and integrated LED lighting during golden hour')..."
-                />
-                <Button 
-                  className="w-full h-12 font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-95"
-                  onClick={() => setIsGenerating(true)}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? "Synthesizing Design..." : "Generate AI Sketch"}
-                </Button>
-              </div>
+               </div>
             </CardContent>
           </Card>
+
+          {/* AI Generator Section */}
+          <DesignGenerator projectId={project.id} />
         </div>
 
-        {/* Sidebar/History Column */}
+        {/* Sidebar: History and Tips */}
         <div className="space-y-6">
-          <Card className="bg-white/5 border-white/10">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <History className="mr-2 h-5 w-5 text-muted-foreground" />
-                Recent Sketches
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex space-x-3 group cursor-pointer">
-                  <div className="w-20 h-20 rounded-lg bg-white/5 border border-white/10 overflow-hidden flex-shrink-0 group-hover:border-primary/50 transition-colors" />
-                  <div className="space-y-1 py-1">
-                    <p className="text-sm font-medium">Sketch_v{i}.png</p>
-                    <p className="text-xs text-muted-foreground">Generated 2h ago</p>
-                    <div className="flex space-x-2 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Download className="h-3 w-3 text-muted-foreground hover:text-white" />
-                      <Share2 className="h-3 w-3 text-muted-foreground hover:text-white" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <Button variant="ghost" className="w-full text-xs text-muted-foreground hover:text-foreground">
-                View All History
-              </Button>
-            </CardContent>
-          </Card>
+          <DesignHistory designs={designs} />
 
-          <Card className="bg-primary/5 border-primary/20">
+          <Card className="bg-primary/5 border-primary/20 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Info className="h-12 w-12" />
+            </div>
             <CardContent className="p-6 space-y-4">
-              <h4 className="font-bold text-primary">Terrace Pro Tip</h4>
+              <h4 className="font-bold text-primary flex items-center">
+                Зөвлөгөө
+              </h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Use specific material keywords like 'Ipe wood', 'brushed aluminum', or 'natural slate' to improve AI accuracy for structural details.
+                Загвар гаргахдаа материалын төрлийг (жишээ нь: "Ган", "Мод") тодорхой бичвэл AI илүү нарийвчлалтай зураг гаргах боломжтой болно.
               </p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
+  );
+}
+
+// Helper to keep icon imports clean
+function ImageIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="9" cy="9" r="2" />
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+    </svg>
   );
 }

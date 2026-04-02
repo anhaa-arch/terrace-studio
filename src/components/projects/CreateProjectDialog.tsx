@@ -44,18 +44,22 @@ export function CreateProjectDialog() {
     setLoading(true);
     try {
       const imageUrl = await uploadImage(file);
+      console.log("Image uploaded successfully, URL:", imageUrl);
+
       await createProject({
         title,
         description,
         original_image_url: imageUrl,
       });
 
+      console.log("Project created successfully in Database");
       setOpen(false);
       resetForm();
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Төсөл үүсгэхэд алдаа гарлаа.");
+    } catch (error: any) {
+      console.error("Project Creation Flow Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Тодорхойгүй алдаа гарлаа";
+      alert(`Төсөл үүсгэхэд алдаа гарлаа: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

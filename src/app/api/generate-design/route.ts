@@ -51,11 +51,12 @@ export async function POST(request: Request) {
     console.error("Design Generation Error:", error);
 
     // OpenAI Billing Limit алдааг шалгах (Status: 400, Message: Billing hard limit)
-    if (error.status === 400 && error.message?.includes("Billing hard limit")) {
+    const errorMessage = error.message || "";
+    if (error.status === 400 || errorMessage.includes("Billing hard limit")) {
       return NextResponse.json(
         { 
           error: "OPENAI_BILLING_LIMIT",
-          message: "OpenAI usage лимит хүрсэн байна." 
+          message: "OpenAI хэрэглээний лимит хүрсэн тул одоогоор AI зураг гаргах боломжгүй байна. OpenAI billing тохиргоогоо шалгана уу." 
         }, 
         { status: 400 }
       );
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { 
         error: "GENERIC_AI_ERROR", 
-        message: error.message || "Тодорхойгүй алдаа гарлаа." 
+        message: errorMessage || "Тодорхойгүй алдаа гарлаа." 
       },
       { status: 500 }
     );

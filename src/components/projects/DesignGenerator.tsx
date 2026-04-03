@@ -43,9 +43,11 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        if (data.error === "OPENAI_BILLING_LIMIT") {
+        if (response.status === 400 && data.error === "OPENAI_BILLING_LIMIT") {
           console.warn("OpenAI billing hard limit reached");
-          throw new Error("OpenAI usage лимит хүрсэн тул одоогоор AI зураг гаргах боломжгүй байна. OpenAI billing тохиргоогоо шалгана уу.");
+          alert("OpenAI хэрэглээний лимит хүрсэн тул одоогоор AI зураг гаргах боломжгүй байна. OpenAI billing тохиргоогоо шалгана уу.");
+          setLoading(false);
+          return;
         }
         throw new Error(data.message || "AI загвар үүсгэхэд алдаа гарлаа.");
       }

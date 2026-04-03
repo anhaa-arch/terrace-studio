@@ -7,25 +7,40 @@ const openai = new OpenAI({
 
 /**
  * AI ашиглан террасын зураг generate хийх функц
- * @param prompt - Зургийн тайлбар (Англи хэлээр)
- * @param width - Зургийн өргөн (standard: 1024)
- * @param height - Зургийн өндөр (standard: 1024 for DALL-E 3)
+ * @param options - Дизайн гаргахад шаардлагатай мэдээллүүд
  */
-export async function generateTerraceImage(
-  prompt: string,
-  width: number = 1024,
-  height: number = 1024
-): Promise<{ imageUrl: string }> {
+export async function generateTerraceImage(options: {
+  project: { title: string; description?: string | null; original_image_url: string };
+  type: string;
+  material?: string;
+  width_cm?: number;
+  depth_cm?: number;
+  notes?: string;
+}): Promise<{ imageUrl: string }> {
   try {
+    const { project, type, material, width_cm, depth_cm, notes } = options;
+
+    // AI-д зориулсан Англи prompt угсрах
+    // Хэрэглэгчийн өгсөн мэдээлэл дээр үндэслэн нарийн тайлбар үүсгэнэ.
+    const aiPrompt = `High-quality 3D architectural visualization of a modern ${type.toLowerCase()} design. 
+    Context: On top of an apartment building similar to: ${project.title}.
+    Materials to use: ${material || "modern eco-friendly materials, wood, and glass"}. 
+    Approximate dimensions: ${width_cm || 0}cm width by ${depth_cm || 0}cm depth. 
+    Style: Minimalist, luxury, cozy outdoor living space with premium furniture. 
+    Additional user requirements: ${notes || "Create a beautiful, functional space"}. 
+    Lighting: Golden hour sunset lighting, soft shadows. 
+    Technical: Ultra-realistic 4k render, cinematic architectural photography, octane render style.`;
+
+    console.log("Generating Terrace Image with Prompt:", aiPrompt);
+
     // DALL-E 3 ашиглан зураг generate хийх
-    // Анхааруулга: DALL-E 3 нь 1024x1024, 1024x1792, эсвэл 1792x1024 гэсэн хэмжээнүүдийг дэмждэг.
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: prompt,
+      prompt: aiPrompt,
       n: 1,
-      size: `${width}x${height}` as any, // DALL-E 3 defaults to 1024x1024
-      quality: "hd", // Өндөр чанартай гаралт
-      style: "vivid", // Илүү тод өнгө аястай
+      size: "1024x1024",
+      quality: "hd",
+      style: "vivid",
     });
 
     const imageUrl = response.data && response.data.length > 0 ? response.data[0].url : null;
@@ -33,6 +48,12 @@ export async function generateTerraceImage(
     if (!imageUrl) {
       throw new Error("Зургийн URL буцаасангүй.");
     }
+
+    /**
+     * TODO: Дараагийн шатанд OpenAI Images Edit (Inpainting) API ашиглан 
+     * хэрэглэгчийн original_image_url дээр шууд "зурах" боломжийг хэрэгжүүлнэ.
+     * Энэ нь маск (mask) болон original image-ийг prompt-той хамт илгээхийг шаардана.
+     */
 
     return { imageUrl };
   } catch (error: any) {

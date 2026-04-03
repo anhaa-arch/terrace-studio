@@ -40,16 +40,20 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
         }),
       });
 
-      if (!response.ok) throw new Error("Алдаа гарлаа.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Алдаа гарлаа.");
+      }
       
       router.refresh();
       setMaterial("");
       setWidth("");
       setHeight("");
       setNotes("");
-    } catch (error) {
+      // Success alert or toast could be added here
+    } catch (error: any) {
       console.error(error);
-      alert("AI загвар үүсгэхэд алдаа гарлаа.");
+      alert(error.message || "AI загвар үүсгэхэд алдаа гарлаа.");
     } finally {
       setLoading(false);
     }
@@ -142,12 +146,12 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Боловсруулж байна...
+                AI дизайн боловсруулж байна...
               </>
             ) : (
               <>
-                <Sparkles className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-                Загвар гаргах
+                <Sparkles className="mr-2 h-5 w-5 group-hover:animate-pulse text-primary-foreground" />
+                Дизайн гаргах
               </>
             )}
           </Button>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createDesign } from "@/app/(dashboard)/projects/actions";
+import { createDesign, getProjectById } from "@/app/(dashboard)/projects/actions";
 import { generateTerraceImage } from "@/lib/ai";
 
 export async function POST(request: Request) {
@@ -14,28 +14,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // AI-д зориулсан Англи prompt угсрах
-    const aiPrompt = `High-quality 3D render of a modern Mongolian apartment roof terrace. 
-Terrace type: ${type}. 
-Materials: ${material || "modern wood and stone"}. 
-Approximate size: ${width_cm || 0}cm by ${depth_cm || 0}cm. 
-Style: minimal, cozy, suitable for real estate marketing. 
-Additional details: ${notes || "No additional notes"}. 
-Golden hour lighting, ultra realistic, 4k, architectural visualization.`;
+    // Supabase-аас төслийн мэдээллийг авах (Original Image URL-д зориулж)
+    const project = await getProjectById(projectId);
+    if (!project) {
+      throw new Error("Төсөл олдсонгүй.");
+    }
 
-    console.log("Generating Design with Prompt:", aiPrompt);
+    // Бодит AI дуудлага хийх
+    const { imageUrl: generatedImageUrl } = await generateTerraceImage({
+      project: {
+        title: project.title,
+        description: project.description,
+        original_image_url: project.original_image_url,
+      },
+      type,
+      material,
+      width_cm,
+      depth_cm,
+      notes,
+    });
 
-    // Бодит AI дуудлага хийх (DALL-E 3)
-    // DALL-E 3 supports 1024x1024 by default
-    const { imageUrl: generatedImageUrl } = await generateTerraceImage(
-      aiPrompt,
-      1024,
-      1024
-    );
-
+    // Үр дүнг мэдээллийн санд хадгалах
     const newDesign = await createDesign({
       project_id: projectId,
-      type: type,
+      type: type as any,
       material: material || "Unknown",
       width_cm: width_cm || 0,
       depth_cm: depth_cm || 0,

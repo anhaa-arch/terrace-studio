@@ -10,7 +10,7 @@ import { Sparkles, Wand2, Loader2, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface DesignGeneratorProps {
-  projectId: string;
+  projectId: string | number;
 }
 
 export function DesignGenerator({ projectId }: DesignGeneratorProps) {
@@ -50,7 +50,6 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
       setWidth("");
       setHeight("");
       setNotes("");
-      // Success alert or toast could be added here
     } catch (error: any) {
       console.error(error);
       alert(error.message || "AI загвар үүсгэхэд алдаа гарлаа.");

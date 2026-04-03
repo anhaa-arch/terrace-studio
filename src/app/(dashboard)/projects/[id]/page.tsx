@@ -1,14 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Download, Share2, History, Wand2, Info } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import Link from "next/link";
 import { getProjectById, getDesignsByProjectId } from "../actions";
 import { DesignGenerator } from "@/components/projects/DesignGenerator";
 import { DesignHistory } from "@/components/projects/DesignHistory";
+import { notFound } from "next/navigation";
 import { format } from "date-fns";
 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+  console.log("Rendering detail page for ID:", params.id);
+  
   const project = await getProjectById(params.id);
+  
+  if (!project) {
+    console.error(`Project not found for ID: ${params.id}`);
+    notFound();
+  }
+
   const designs = await getDesignsByProjectId(params.id);
 
   return (
@@ -23,7 +32,7 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight text-white">{project.title}</h1>
           <div className="flex items-center space-x-2 text-xs text-muted-foreground uppercase tracking-widest">
-            <span>ID: {project.id.split("-")[0]}</span>
+            <span>ID: {typeof project.id === 'string' && project.id.includes("-") ? project.id.split("-")[0] : project.id}</span>
             <span>•</span>
             <span>Үүсгэсэн: {format(new Date(project.created_at), "yyyy-MM-dd")}</span>
           </div>
@@ -87,27 +96,5 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
         </div>
       </div>
     </div>
-  );
-}
-
-// Helper to keep icon imports clean
-function ImageIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-      <circle cx="9" cy="9" r="2" />
-      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-    </svg>
   );
 }

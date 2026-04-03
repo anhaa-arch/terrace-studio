@@ -67,27 +67,41 @@ export async function getProjects() {
 /**
  * Төслийг ID-аар нь авах
  */
-export async function getProjectById(id: string) {
+export async function getProjectById(id: string | number) {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("id", id)
-    .single();
+  console.log("Fetching project with ID:", id);
 
-  if (error) {
-    throw new Error(`Төсөл олдсонгүй: ${error.message}`);
+  try {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Supabase getProjectById Error:", {
+        id,
+        message: error.message,
+        code: error.code,
+      });
+      return null;
+    }
+
+    return data as Project;
+  } catch (error: any) {
+    console.error("Unexpected error in getProjectById:", error);
+    return null;
   }
-
-  return data as Project;
 }
 
 /**
  * Төслийн бүх загваруудыг авах
  */
-export async function getDesignsByProjectId(projectId: string) {
+export async function getDesignsByProjectId(projectId: string | number) {
   const supabase = createClient();
+
+  console.log("Fetching designs for project ID:", projectId);
 
   const { data, error } = await supabase
     .from("designs")
@@ -96,11 +110,11 @@ export async function getDesignsByProjectId(projectId: string) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Загвар уншихад алдаа:", error.message);
+    console.error("Designs fetch error:", error.message);
     return [];
   }
 
-  return data as Database["public"]["Tables"]["designs"]["Row"][];
+  return data as Design[];
 }
 
 /**

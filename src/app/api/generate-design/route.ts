@@ -49,8 +49,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, design: newDesign });
   } catch (error: any) {
     console.error("Design Generation Error:", error);
+
+    // OpenAI Billing Limit алдааг шалгах (Status: 400, Message: Billing hard limit)
+    if (error.status === 400 && error.message?.includes("Billing hard limit")) {
+      return NextResponse.json(
+        { 
+          error: "OPENAI_BILLING_LIMIT",
+          message: "OpenAI usage лимит хүрсэн байна." 
+        }, 
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Алдаа гарлаа: " + error.message },
+      { 
+        error: "GENERIC_AI_ERROR", 
+        message: error.message || "Тодорхойгүй алдаа гарлаа." 
+      },
       { status: 500 }
     );
   }

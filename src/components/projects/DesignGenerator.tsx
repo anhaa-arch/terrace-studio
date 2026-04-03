@@ -40,9 +40,14 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Алдаа гарлаа.");
+        if (data.error === "OPENAI_BILLING_LIMIT") {
+          console.warn("OpenAI billing hard limit reached");
+          throw new Error("OpenAI usage лимит хүрсэн тул одоогоор AI зураг гаргах боломжгүй байна. OpenAI billing тохиргоогоо шалгана уу.");
+        }
+        throw new Error(data.message || "AI загвар үүсгэхэд алдаа гарлаа.");
       }
       
       router.refresh();
@@ -51,8 +56,8 @@ export function DesignGenerator({ projectId }: DesignGeneratorProps) {
       setHeight("");
       setNotes("");
     } catch (error: any) {
-      console.error(error);
-      alert(error.message || "AI загвар үүсгэхэд алдаа гарлаа.");
+      console.error("Design Generation Error:", error);
+      alert(error.message || "Техникийн алдаа гарлаа. Та дараа дахин оролдоно уу.");
     } finally {
       setLoading(false);
     }
